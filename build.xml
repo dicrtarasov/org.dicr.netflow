@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.dicr.netflow" basedir="." default="rpm">
+
+	<property name="src" location="src"/>
+	<property name="target" location="target"/>
+
+	<path id="libs">
+	    <fileset dir="/usr/java/lib" includes="**/*.jar"/>
+	</path>
+
+	<target name="init">
+	    <tstamp><format property="release" pattern="yyMMdd"/></tstamp>
+	    <mkdir dir="${target}"/>
+	</target>
+
+	<target name="clean">
+	    <delete dir="${target}" />
+	</target>
+
+	<target name="src" depends="init">
+	    <jar basedir="${src}/main/java" destfile="${target}/${ant.project.name}-${release}-src.jar" compress="true"/>
+	</target>
+
+	<target name="bin" depends="init">
+	    <mkdir dir="${target}/classes"/>
+	    <javac srcdir="${src}/main/java" destdir="${target}/classes" classpathref="libs" source="1.5" deprecation="yes" optimize="yes" debug="on" encoding="UTF8"/>
+		<!--copy todir="${target}/classes"><fileset dir="${src}/main/resources"/></copy-->
+	    <jar basedir="${target}/classes" destfile="${target}/${ant.project.name}-${release}-bin.jar" compress="true"/>
+	</target>
+
+	<target name="doc" depends="init">
+   	    <javadoc sourcepath="${src}/main/java" destdir="${target}/javadoc" packagenames="org.dicr.*" classpathref="libs"
+   	    	access="public" author="true" use="true" version="true"
+   	    	source="1.5" encoding="UTF8"
+   	    	doctitle="NetFlow for Java"
+   	    />
+	    <jar basedir="${target}/javadoc" destfile="${target}/${ant.project.name}-${release}-doc.jar" compress="true"/>
+	</target>
+
+	<target name="tar" depends="init">
+	    <tar basedir="${basedir}/../" destfile="${target}/${ant.project.name}-${release}.tgz" compression="gzip" includes="${ant.project.name}/**" excludes="**/target/**"/>
+	</target>
+
+	<target name="rpm" depends="tar">
+		<rpm specFile="-v" command="-ta ${target}/${ant.project.name}-${release}.tgz" failOnError="false"/>
+	</target>
+</project>

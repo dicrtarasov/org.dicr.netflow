@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="DEBUG" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="DatePattern" value="'.'yyMMddaa"/>
+		<param name="Append" value="true"/>
+		<param name="BufferedIO" value="false"/>
+		<param name="File" value="/var/log/org.dicr.netflow/debug.log"/>
+		<param name="Threshold" value="TRACE"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd.MM.yy HH:mm:ss} %-5p [%t]: %c{1} %x - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="INFO" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="DatePattern" value="'.'yyMMww"/>
+		<param name="Append" value="true"/>
+		<param name="BufferedIO" value="false"/>
+		<param name="File" value="/var/log/org.dicr.netflow/info.log"/>
+		<param name="Threshold" value="INFO"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd.MM.yy HH:mm:ss} %-5p [%t]: %c{1} %x - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="ERROR" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="DatePattern" value="'.'yyMM"/>
+		<param name="Append" value="true"/>
+		<param name="BufferedIO" value="false"/>
+		<param name="File" value="/var/log/org.dicr.netflow/error.log"/>
+		<param name="Threshold" value="WARN"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{dd.MM.yy HH:mm:ss} %-5p [%t]: %c %x - %m%n" />
+		</layout>
+	</appender>
+
+	<logger name="org.dicr"><level value="trace"/></logger>
+	<logger name="org.springframework"><level value="info"/></logger>
+
+	<root>
+		<level value="warn" />
+		<appender-ref ref="DEBUG" />
+		<appender-ref ref="INFO" />
+		<appender-ref ref="ERROR" />
+	</root>
+</log4j:configuration>

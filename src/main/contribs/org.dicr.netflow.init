@@ -1,0 +1,81 @@
+#!/bin/bash
+#
+#	/etc/rc.d/init.d/org.dicr.netflow
+#
+#	Startup script for org.dicr.netflow
+#
+# chkconfig: 2345 86 14
+# description: Dicr Java NetFlow Server
+# processname: java
+# config: /etc/org.dicr.netflow/server.xml
+# config: /etc/org.dicr.netflow/log4j.xml
+# probe: false
+# pidfile: /var/run/org.dicr.netflow.pid
+
+# Source function library.
+. /etc/init.d/functions
+
+[ -f /etc/profile.d/java.sh ] && source /etc/profile.d/java.sh
+
+RETVAL=0
+prog=org.dicr.netflow
+
+start() {
+	echo -n $"Starting $prog: "
+	( /usr/bin/java -server -Xincgc -Xfuture -Xms64m -Xmx256m \
+	    -cp "$CLASSPATH:/etc/$prog" -Dcom.sun.management.jmxremote \
+	    -Dorg.apache.commons.logging.Log=org.apache.commons.logging.impl.Log4JLogger \
+	    -Dlog4j.configuration=file:/etc/$prog/log4j.xml \
+	    org.dicr.spring.container.Main /etc/$prog/server.xml \
+	    >>/var/log/org.dicr.netflow/stdout.log 2>&1) &
+	PID=$(jobs -p)
+	if [ -n "$PID" ]; then
+	    echo $PID >/var/run/$prog.pid
+	    RETVAL=0;
+	else
+	    RETVAL=-1;
+	fi
+	if [ $RETVAL -eq 0 ]; then
+	    touch /var/lock/subsys/$prog
+	    echo_success $"Starting $prog:"
+	else
+	    echo_failure $"Starting $prog:"
+	fi
+	echo
+	return $RETVAL
+}
+
+stop() {
+	echo -n "Shutting down $prog: "
+	killproc $prog
+	RETVAL=$?
+	echo
+	rm -f /var/run/$prog.pid
+	rm -f /var/lock/subsys/$prog
+	return $RETVAL
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart)
+    	stop
+	start
+	;;
+    condrestart)
+	if [ -f /var/lock/subsys/$prog ]; then
+	    stop || :
+	    start || :
+	fi
+	;;
+    *)
+	echo "Usage: $prog {start|stop|restart|condrestart}"
+	exit 1
+	;;
+esac
+exit $?
+

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This is the example configuration -->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	<!--
+		##########################################################################
+		# JMXServer Configuration                                                #
+		##########################################################################
+	-->
+	<bean name="JMXServer" class="org.dicr.spring.container.Main">
+		<property name="connectors">
+			<map>
+				<entry
+					key="org.dicr:service=connector,type=jmxmp,port=8770"
+					value="service:jmx:jmxmp://0.0.0.0:8770" />
+			</map>
+		</property>
+		<property name="services">
+			<map>
+				<entry
+					key="org.dicr:service=traffic,type=netflow,version=V7"
+					value-ref="trafficSource" />
+			</map>
+		</property>
+	</bean>
+
+	<!--
+		##########################################################################
+		# Traffic Source                                                         #
+		##########################################################################
+	-->
+	<bean id="trafficSource"
+		class="org.dicr.traffic.source.impl.IPTablesTrafficSource"
+		init-method="start" destroy-method="stop">
+		<property name="resetOnFire" value="true" />
+		<property name="firePeriod" value="60" />
+		<property name="skipEmpty" value="true" />
+		<property name="trafficListeners">
+			<set>
+				<ref bean="netflowExporter" />
+			</set>
+		</property>
+	</bean>
+
+	<!--
+		##########################################################################
+		# Traffic Exporter                                                         #
+		##########################################################################
+	-->
+	<bean id="netflowExporter"
+		class="org.dicr.traffic.exporter.impl.NetFlowTrafficExporter">
+		<property name="type">
+			<util:constant
+				static-field="org.dicr.netflow.impl.v7.FlowTypeV7.INSTANCE" />
+		</property>
+		<property name="exporter">
+			<bean id="udpExporter"
+				class="org.dicr.netflow.exporter.impl.UDPExporter">
+				<property name="addresses">
+					<set>
+						<bean class="java.net.InetSocketAddress">
+							<constructor-arg value="193.201.206.3" />
+							<constructor-arg value="8773" />
+						</bean>
+					</set>
+				</property>
+			</bean>
+		</property>
+	</bean>
+</beans>

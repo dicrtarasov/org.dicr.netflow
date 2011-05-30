@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>dicr-project</artifactId>
+    <groupId>org.dicr</groupId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../org.dicr.project</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.dicr</groupId>
+  <artifactId>dicr-netflow</artifactId>
+  <name>JNetFlow</name>
+  <version>1.0-SNAPSHOT</version>
+  <description>Java NetFlow implementation</description>
+  <url>http://dicr.org/projects/jnetflow</url>
+  <inceptionYear>2007</inceptionYear>
+  <dependencies>
+    <dependency>
+      <groupId>org.dicr</groupId>
+      <artifactId>dicr-traffic</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dicr</groupId>
+      <artifactId>dicr-util</artifactId>
+      <version>2.0-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+</project>
